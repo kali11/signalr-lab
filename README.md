@@ -151,6 +151,50 @@ public async Task Run(
 18. Get CosmosDB connection string and put a variable "AzureCosmosDBConnection" with Connection String in these places:
 - in local.setting.json file
 - in Configuration of Azure Function App
+19b. Create new Flight class:
+```
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Company.Function
+{
+    public class Rootobject
+    {
+        public int time { get; set; }
+        public string[][] states { get; set; }
+    }
+
+    public class Flight
+    {
+        [JsonProperty("id")]
+        public string icao24 { get; set; }
+        public string callsign { get; set; }
+        public string originCountry { get; set; }
+        public float? longitute { get; set; }
+        public float? latitude { get; set; }
+        public float? altitude { get; set; }
+        public float? velocity { get; set; }
+        public float? trueTrack { get; set; }
+
+        public static Flight CreateFromData(string[] data)
+        {
+            return new Flight
+            {
+                icao24 = data[0].Trim(),
+                callsign = data[1].Trim(),
+                originCountry = data[2].Trim(),
+                longitute = string.IsNullOrEmpty(data[5]) ? (float?)null : float.Parse(data[5].Trim()),
+                latitude = string.IsNullOrEmpty(data[6]) ? (float?)null : float.Parse(data[6].Trim()),
+                altitude = string.IsNullOrEmpty(data[7]) ? (float?)null : float.Parse(data[7].Trim()),
+                velocity = string.IsNullOrEmpty(data[9]) ? (float?)null : float.Parse(data[9].Trim()),
+                trueTrack = string.IsNullOrEmpty(data[10]) ? (float?)null : float.Parse(data[10].Trim())
+            };
+        }
+    }
+}
+```
 19. Test function locally
 20. Deploy it to Azure Funtion App
 21. In the same project create new Azure Function with CosmosDB trigger.
